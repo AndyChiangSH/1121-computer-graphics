@@ -66,6 +66,16 @@ void Camera::updateViewMatrix() {
    *       glm::lookAt (https://glm.g-truc.net/0.9.9/api/a00247.html#gaa64aa951a0e99136bba9008d2b59c78e)
    * Note: You must not use gluLookAt
    */
+
+  // Step 1: Rotate original_front and original_up using this->rotation
+  glm::vec3 rotatedFront = rotation * original_front;
+  glm::vec3 rotatedUp = rotation * original_up;
+
+  // Step 2: Calculate the right vector by taking the cross product
+  glm::vec3 right = glm::cross(rotatedFront, rotatedUp);
+
+  // Step 3: Calculate the view matrix with the position
+  viewMatrix = glm::lookAt(position, position + rotatedFront, rotatedUp);
 }
 
 void Camera::updateProjectionMatrix(float aspectRatio) {
@@ -77,4 +87,7 @@ void Camera::updateProjectionMatrix(float aspectRatio) {
    *       glm::perspective (https://glm.g-truc.net/0.9.9/api/a00243.html#ga747c8cf99458663dd7ad1bb3a2f07787)
    * Note: You must not use gluPerspective
    */
+
+  // Calculate perspective projection matrix
+  projectionMatrix = glm::perspective(FOV, aspectRatio, zNear, zFar);
 }

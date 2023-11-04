@@ -71,7 +71,7 @@ void initOpenGL() {
   /* TODO#0: Change window title to "HW1 - `your student id`"
    *        Ex. HW1 - 312550000 
    */
-  glfwSetWindowTitle(window, "HW1 - TA");
+  glfwSetWindowTitle(window, "HW1 - 312553024");
   glfwSetKeyCallback(window, keyCallback);
   glfwSetFramebufferSizeCallback(window, resizeCallback);
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -93,6 +93,188 @@ void initOpenGL() {
  *       You can refer to ppt "Draw Cylinder" page and `CIRCLE_SEGMENT`
  *       You can use color defined above
  */
+
+void draw_cylinder(float radius, float height, int segments) {
+  // Draw a cylinder with top and bottom faces and the specified parameters
+  float angleIncrement = 2.0f * M_PI / segments;
+
+  // Draw the side faces
+  glBegin(GL_QUAD_STRIP);
+  for (int i = 0; i <= segments; i++) {
+    float angle = static_cast<float>(i) * angleIncrement;
+    float x = radius * cos(angle);
+    float z = radius * sin(angle);
+
+    glNormal3f(x, 0.0f, z);  // Define the normal for lighting
+
+    float y1 = -height / 2.0f;
+    float y2 = height / 2.0f;
+
+    glVertex3f(x, y1, z);  // Bottom
+    glVertex3f(x, y2, z);  // Top
+  }
+  glEnd();
+
+  // Draw the top face
+  glBegin(GL_POLYGON);
+  glNormal3f(0.0f, 1.0f, 0.0f);  // Define the normal for lighting
+  for (int i = 0; i < segments; i++) {
+    float angle = static_cast<float>(i) * angleIncrement;
+    float x = radius * cos(angle);
+    float z = radius * sin(angle);
+    glVertex3f(x, height / 2.0f, z);
+  }
+  glEnd();
+
+  // Draw the bottom face
+  glBegin(GL_POLYGON);
+  glNormal3f(0.0f, -1.0f, 0.0f);  // Define the normal for lighting
+  for (int i = 0; i < segments; i++) {
+    float angle = static_cast<float>(i) * angleIncrement;
+    float x = radius * cos(angle);
+    float z = radius * sin(angle);
+    glVertex3f(x, -height / 2.0f, z);
+  }
+  glEnd();
+}
+
+void render_body() {
+  // Render the body (cylinder) with top and bottom faces
+  glPushMatrix();
+  glTranslatef(0.0f, 0.5f, 0.0f);            // Translate to the desired position
+  glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);        // Rotate the body by 90 degrees around the X-axis
+  glColor3f(BLUE);                            // Set the color to red
+  glEnable(GL_NORMALIZE);
+  draw_cylinder(0.5f, 4.0f, CIRCLE_SEGMENT);  // Render the body using drawCylinder
+  glDisable(GL_NORMALIZE);
+  glPopMatrix();
+}
+
+void draw_rectangle(float length, float width, float height) {
+  // Half-dimensions for easier calculations
+  float halfLength = length / 2.0f;
+  float halfWidth = width / 2.0f;
+  float halfHeight = height / 2.0f;
+
+  // Draw the wing as a rectangular cuboid
+  glBegin(GL_QUADS);
+
+  // Front face
+  glNormal3f(0.0f, 0.0f, 1.0f);
+  glVertex3f(-halfLength, -halfHeight, halfWidth);
+  glVertex3f(halfLength, -halfHeight, halfWidth);
+  glVertex3f(halfLength, halfHeight, halfWidth);
+  glVertex3f(-halfLength, halfHeight, halfWidth);
+
+  // Back face
+  glNormal3f(0.0f, 0.0f, -1.0f);
+  glVertex3f(-halfLength, -halfHeight, -halfWidth);
+  glVertex3f(halfLength, -halfHeight, -halfWidth);
+  glVertex3f(halfLength, halfHeight, -halfWidth);
+  glVertex3f(-halfLength, halfHeight, -halfWidth);
+
+  // Right face
+  glNormal3f(1.0f, 0.0f, 0.0f);
+  glVertex3f(halfLength, -halfHeight, halfWidth);
+  glVertex3f(halfLength, -halfHeight, -halfWidth);
+  glVertex3f(halfLength, halfHeight, -halfWidth);
+  glVertex3f(halfLength, halfHeight, halfWidth);
+
+  // Left face
+  glNormal3f(-1.0f, 0.0f, 0.0f);
+  glVertex3f(-halfLength, -halfHeight, halfWidth);
+  glVertex3f(-halfLength, -halfHeight, -halfWidth);
+  glVertex3f(-halfLength, halfHeight, -halfWidth);
+  glVertex3f(-halfLength, halfHeight, halfWidth);
+
+  // Top face
+  glNormal3f(0.0f, 1.0f, 0.0f);
+  glVertex3f(-halfLength, halfHeight, halfWidth);
+  glVertex3f(halfLength, halfHeight, halfWidth);
+  glVertex3f(halfLength, halfHeight, -halfWidth);
+  glVertex3f(-halfLength, halfHeight, -halfWidth);
+
+  // Bottom face
+  glNormal3f(0.0f, -1.0f, 0.0f);
+  glVertex3f(-halfLength, -halfHeight, halfWidth);
+  glVertex3f(halfLength, -halfHeight, halfWidth);
+  glVertex3f(halfLength, -halfHeight, -halfWidth);
+  glVertex3f(-halfLength, -halfHeight, -halfWidth);
+
+  glEnd();
+}
+
+void render_wings() {
+  // Render the wings of airplane
+  glPushMatrix();
+  glTranslatef(2.0f, 0.5f, 0.0f);             // Translate to the desired position
+  glColor3f(RED);                            // Set the color to red
+  glEnable(GL_NORMALIZE);
+  draw_rectangle(4.0f, 1.0f, 0.5f);  // Render the body using drawCylinder
+  glDisable(GL_NORMALIZE);
+  glPopMatrix();
+
+  // Render the wings of airplane
+  glPushMatrix();
+  glTranslatef(-2.0f, 0.5f, 0.0f);  // Translate to the desired position
+  glColor3f(RED);                    // Set the color to red
+  glEnable(GL_NORMALIZE);
+  draw_rectangle(4.0f, 1.0f, 0.5f);  // Render the body using drawCylinder
+  glDisable(GL_NORMALIZE);
+  glPopMatrix();
+}
+
+void draw_triangle(float bottomEdge, float height1, float height2) {
+  glBegin(GL_TRIANGLES);
+  // Face 1
+  glNormal3f(0.0f, 0.0f, 1.0f);                   // Normal pointing along the Z-axis
+  glVertex3f(0.0f, 0.0f, 0.0f);                   // Top vertex
+  glVertex3f(bottomEdge / 2.0f, 0.0f, height1);   // Bottom-left vertex
+  glVertex3f(-bottomEdge / 2.0f, 0.0f, height1);  // Bottom-right vertex
+
+  // Face 2
+  glNormal3f(0.0f, 0.0f, 1.0f);                   // Normal pointing along the Z-axis
+  glVertex3f(0.0f, 0.0f, 0.0f);                   // Top vertex
+  glVertex3f(0.0f, -height2, height1);            // Bottom-left vertex
+  glVertex3f(bottomEdge / 2.0f, 0.0f, height1);   // Bottom-right vertex
+
+  // Face 3
+  glNormal3f(0.0f, 0.0f, 1.0f);                   // Normal pointing along the Z-axis
+  glVertex3f(0.0f, 0.0f, 0.0f);                   // Top vertex
+  glVertex3f(0.0f, -height2, height1);            // Bottom-left vertex
+  glVertex3f(-bottomEdge / 2.0f, 0.0f, height1);   // Bottom-right vertex
+
+  // Face 4
+  glNormal3f(0.0f, 0.0f, 1.0f);                   // Normal pointing along the Z-axis
+  glVertex3f(-bottomEdge / 2.0f, 0.0f, height1);  // Top vertex
+  glVertex3f(0.0f, -height2, height1);            // Bottom-left vertex
+  glVertex3f(bottomEdge / 2.0f, 0.0f, height1);   // Bottom-right vertex
+  glEnd();
+}
+
+void render_tail() {
+  // Render the tail of the airplane
+  glPushMatrix();
+  // Translate to the correct position relative to the body
+  glTranslatef(0.0f, 0.5f, 2.0f);
+  // Rotate the tail if needed
+  // glRotatef(angle, 1.0f, 0.0f, 0.0f);  // Rotate the tail around the X-axis
+
+  // Set the color (e.g., GREEN or your desired color)
+  glColor3f(GREEN);
+
+  // Enable normalization
+  glEnable(GL_NORMALIZE);
+
+  // Draw the tail as a tetrahedron (adjust dimensions as needed)
+  draw_triangle(2.0f, 1.0f, 0.5f);
+
+  // Disable normalization if not needed elsewhere
+  glDisable(GL_NORMALIZE);
+
+  glPopMatrix();
+}
+
 
 void light() {
   GLfloat light_specular[] = {0.6, 0.6, 0.6, 1};
@@ -144,12 +326,12 @@ int main() {
     glLoadMatrixf(camera.getViewMatrix());
 
 
-#ifndef DISABLE_LIGHT   
+//#ifndef DISABLE_LIGHT   
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     glClearDepth(1.0f);
     light();
-#endif
+//#endif
 
     /* TODO#4-2: Update 
      *       You may update position and orientation of airplane here or not.
@@ -190,6 +372,11 @@ int main() {
      *       You may implement functions for drawing components of airplane first
      *       You should try and think carefully about changing the order of rotate and translate
      */
+
+    // printf("Render!");
+    render_body();
+    render_wings();
+    render_tail();
     
 
 #ifdef __APPLE__
