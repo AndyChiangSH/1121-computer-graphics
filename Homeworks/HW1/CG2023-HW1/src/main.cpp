@@ -98,23 +98,6 @@ void draw_cylinder(float radius, float height, int segments) {
   // Draw a cylinder with top and bottom faces and the specified parameters
   float angleIncrement = 2.0f * M_PI / segments;
 
-  // Draw the side faces
-  glBegin(GL_QUAD_STRIP);
-  for (int i = 0; i <= segments; i++) {
-    float angle = static_cast<float>(i) * angleIncrement;
-    float x = radius * cos(angle);
-    float z = radius * sin(angle);
-
-    glNormal3f(x, 0.0f, z);  // Define the normal for lighting
-
-    float y1 = -height / 2.0f;
-    float y2 = height / 2.0f;
-
-    glVertex3f(x, y1, z);  // Bottom
-    glVertex3f(x, y2, z);  // Top
-  }
-  glEnd();
-
   // Draw the top face
   glBegin(GL_POLYGON);
   glNormal3f(0.0f, 1.0f, 0.0f);  // Define the normal for lighting
@@ -136,17 +119,32 @@ void draw_cylinder(float radius, float height, int segments) {
     glVertex3f(x, -height / 2.0f, z);
   }
   glEnd();
+
+  // Draw the side faces
+  glBegin(GL_QUAD_STRIP);
+  for (int i = 0; i <= segments; i++) {
+    float angle = static_cast<float>(i) * angleIncrement;
+    float x = radius * cos(angle);
+    float z = radius * sin(angle);
+
+    glNormal3f(x, 0.0f, z);  // Define the normal for lighting
+
+    float y1 = -height / 2.0f;
+    float y2 = height / 2.0f;
+
+    glVertex3f(x, y1, z);  // Bottom
+    glVertex3f(x, y2, z);  // Top
+  }
+  glEnd();
 }
 
 void render_body() {
   // Render the body (cylinder) with top and bottom faces
   glPushMatrix();
-  glTranslatef(0.0f, 0.5f, 0.0f);            // Translate to the desired position
+  glTranslatef(0.0f, 0.5f, 0.0f);             // Translate to the desired position
   glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);        // Rotate the body by 90 degrees around the X-axis
   glColor3f(BLUE);                            // Set the color to red
-  glEnable(GL_NORMALIZE);
-  draw_cylinder(0.5f, 4.0f, CIRCLE_SEGMENT);  // Render the body using drawCylinder
-  glDisable(GL_NORMALIZE);
+  draw_cylinder(0.5f, 4.0f, CIRCLE_SEGMENT);  // Render the body using draw cylinder
   glPopMatrix();
 }
 
@@ -209,43 +207,39 @@ void render_wings() {
   glPushMatrix();
   glTranslatef(2.0f, 0.5f, 0.0f);             // Translate to the desired position
   glColor3f(RED);                            // Set the color to red
-  glEnable(GL_NORMALIZE);
   draw_rectangle(4.0f, 1.0f, 0.5f);  // Render the body using drawCylinder
-  glDisable(GL_NORMALIZE);
   glPopMatrix();
 
   // Render the wings of airplane
   glPushMatrix();
   glTranslatef(-2.0f, 0.5f, 0.0f);  // Translate to the desired position
   glColor3f(RED);                    // Set the color to red
-  glEnable(GL_NORMALIZE);
   draw_rectangle(4.0f, 1.0f, 0.5f);  // Render the body using drawCylinder
-  glDisable(GL_NORMALIZE);
   glPopMatrix();
 }
 
 void draw_triangle(float bottomEdge, float height1, float height2) {
   glBegin(GL_TRIANGLES);
   // Face 1
-  glNormal3f(0.0f, 0.0f, 1.0f);                   // Normal pointing along the Z-axis
+  //glNormal3f(0.0f, 0.0f, 1.0f);                   // Normal pointing along the Z-axis
   glVertex3f(0.0f, 0.0f, 0.0f);                   // Top vertex
   glVertex3f(bottomEdge / 2.0f, 0.0f, height1);   // Bottom-left vertex
   glVertex3f(-bottomEdge / 2.0f, 0.0f, height1);  // Bottom-right vertex
 
   // Face 2
-  glNormal3f(0.0f, 0.0f, 1.0f);                   // Normal pointing along the Z-axis
+  //glNormal3f(0.0f, 0.0f, 1.0f);                   // Normal pointing along the Z-axis
   glVertex3f(0.0f, 0.0f, 0.0f);                   // Top vertex
   glVertex3f(0.0f, -height2, height1);            // Bottom-left vertex
   glVertex3f(bottomEdge / 2.0f, 0.0f, height1);   // Bottom-right vertex
 
   // Face 3
-  glNormal3f(0.0f, 0.0f, 1.0f);                   // Normal pointing along the Z-axis
+  //glNormal3f(0.0f, 0.0f, 1.0f);                   // Normal pointing along the Z-axis
   glVertex3f(0.0f, 0.0f, 0.0f);                   // Top vertex
   glVertex3f(0.0f, -height2, height1);            // Bottom-left vertex
   glVertex3f(-bottomEdge / 2.0f, 0.0f, height1);   // Bottom-right vertex
 
   // Face 4
-  glNormal3f(0.0f, 0.0f, 1.0f);                   // Normal pointing along the Z-axis
+  //glNormal3f(0.0f, 0.0f, 1.0f);                   // Normal pointing along the Z-axis
   glVertex3f(-bottomEdge / 2.0f, 0.0f, height1);  // Top vertex
   glVertex3f(0.0f, -height2, height1);            // Bottom-left vertex
   glVertex3f(bottomEdge / 2.0f, 0.0f, height1);   // Bottom-right vertex
@@ -263,14 +257,8 @@ void render_tail() {
   // Set the color (e.g., GREEN or your desired color)
   glColor3f(GREEN);
 
-  // Enable normalization
-  glEnable(GL_NORMALIZE);
-
   // Draw the tail as a tetrahedron (adjust dimensions as needed)
   draw_triangle(2.0f, 1.0f, 0.5f);
-
-  // Disable normalization if not needed elsewhere
-  glDisable(GL_NORMALIZE);
 
   glPopMatrix();
 }
@@ -377,7 +365,6 @@ int main() {
     render_body();
     render_wings();
     render_tail();
-    
 
 #ifdef __APPLE__
     // Some platform need explicit glFlush
